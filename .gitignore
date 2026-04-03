@@ -1,0 +1,18 @@
+# dependencies
+/node_modules
+/venv
+
+# production
+/dist
+
+# misc
+.DS_Store
+*.local
+
+# temp data scripts
+yf_data.json
+yf_script.py
+process_data.py
+inject_ui.py
+data_output.txt
+sript.jsx
