@@ -8,12 +8,53 @@ html, body, #root {
   height: 100%;
 }
 
+:root {
+  /* Light Theme */
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-toggled-off: transparent;
+  --border-subtle: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text-primary: #1e293b;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --bg-table-even: #f1f5f9;
+  --bg-table-odd: #ffffff;
+  --bg-table-header: #f8fafc;
+  --bg-table-footer: #e2e8f0;
+  --bg-insight: #fff7ed;
+  --scroll-track: #f8fafc;
+  --scroll-thumb: #cbd5e1;
+  --scroll-thumb-hover: #94a3b8;
+}
+
+[data-theme='dark'] {
+  /* Dark Theme */
+  --bg-main: #0a0a0f;
+  --bg-card: #0d0d14;
+  --bg-toggled-off: transparent;
+  --border-subtle: #1a1a2e;
+  --border-strong: #2a2a3e;
+  --text-primary: #d4d4d8;
+  --text-muted: #888888;
+  --text-dim: #555555;
+  --bg-table-even: #0d0d14;
+  --bg-table-odd: #0a0a0f;
+  --bg-table-header: #0d0d14;
+  --bg-table-footer: #111118;
+  --bg-insight: #0f1520;
+  --scroll-track: #0a0a0f;
+  --scroll-thumb: #2a2a3e;
+  --scroll-thumb-hover: #3a3a5e;
+}
+
 body {
   font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Fira Code', 'SF Mono', monospace;
-  background: #0a0a0f;
-  color: #d4d4d8;
+  background: var(--bg-main);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 ::-webkit-scrollbar {
@@ -22,14 +63,14 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0a0f;
+  background: var(--scroll-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2a2a3e;
+  background: var(--scroll-thumb);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a3a5e;
+  background: var(--scroll-thumb-hover);
 }

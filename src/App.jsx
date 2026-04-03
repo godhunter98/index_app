@@ -143,6 +143,14 @@ export default function WorstTimingInvestor() {
   const [activeTab, setActiveTab] = useState(0);
   const [showTRI, setShowTRI] = useState(false);
   const [isLuckiest, setIsLuckiest] = useState(false);
+  const [theme, setTheme] = useState('dark');
+  
+  // Apply theme to document
+  useMemo(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+  }, [theme]);
   
   const allResults = useMemo(() => 
     TAB_CONFIG.map(t => computeTable(t.key, t.current, t.div, isLuckiest)), [isLuckiest]
@@ -155,38 +163,59 @@ export default function WorstTimingInvestor() {
   const totalVal = showTRI ? result.totalCurrentTRI : result.totalCurrentPrice;
   const multiplier = (totalVal / result.totalInvested).toFixed(1);
 
-  const cellStyle = { padding: "7px 8px", borderBottom: "1px solid #1a1a2e", whiteSpace: "nowrap" };
-  const headerCell = { ...cellStyle, fontWeight: 600, color: "#666", borderBottom: "2px solid #2a2a3e", position: "sticky", top: 0, background: "#0d0d14", zIndex: 1 };
+  const cellStyle = { padding: "7px 8px", borderBottom: "1px solid var(--border-subtle)", whiteSpace: "nowrap" };
+  const headerCell = { ...cellStyle, fontWeight: 600, color: "var(--text-muted)", borderBottom: "2px solid var(--border-strong)", position: "sticky", top: 0, background: "var(--bg-card)", zIndex: 1 };
 
   return (
     <div style={{
       fontFamily: "'JetBrains Mono', 'IBM Plex Mono', 'Fira Code', 'SF Mono', monospace",
-      background: "#0a0a0f",
-      color: "#d4d4d8",
+      background: "var(--bg-main)",
+      color: "var(--text-primary)",
       minHeight: "100vh",
       padding: "20px 12px",
     }}>
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         
-        {/* ═══ TITLE ═══ */}
-        <div style={{
-          border: "2px solid #1a1a2e",
-          padding: "14px 16px",
-          marginBottom: 16,
-          background: "#0d0d14",
-        }}>
-          <h1 style={{ fontSize: 16, margin: 0, color: "#ff6b35", fontWeight: 800, letterSpacing: "-0.3px" }}>
-            {config.label} {isLuckiest ? "'Luckiest' Investor — ₹1 Lakh/Year at 52-Week Low" : "'Worst Timing' Investor — ₹1 Lakh/Year at 52-Week High"}
-          </h1>
-          <p style={{ fontSize: 10, color: "#555", margin: "6px 0 0", lineHeight: 1.5 }}>
-            Assumptions: ₹1,00,000 invested each year at the calendar year's {isLuckiest ? "52-week low" : "52-week high"}. 
-            Current {config.label}: {config.current.toLocaleString("en-IN")} (Apr 2, 2026). 
-            {showTRI ? ` TRI: ~${(config.div * 100).toFixed(1)}% avg dividend yield compounded.` : " No dividends (price return only)."}
-          </p>
+                {/* ═══ THEME AND TITLE HEADER ═══ */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+          <div style={{
+            border: "2px solid var(--border-subtle)",
+            padding: "14px 16px",
+            background: "var(--bg-card)",
+            flexGrow: 1,
+            marginRight: 12
+          }}>
+            <h1 style={{ fontSize: 16, margin: 0, color: "#ff6b35", fontWeight: 800, letterSpacing: "-0.3px" }}>
+              {config.label} {isLuckiest ? "'Luckiest' Investor — ₹1 Lakh/Year at 52-Week Low" : "'Worst Timing' Investor — ₹1 Lakh/Year at 52-Week High"}
+            </h1>
+            <p style={{ fontSize: 10, color: "var(--text-muted)", margin: "6px 0 0", lineHeight: 1.5 }}>
+              Assumptions: ₹1,00,000 invested each year at the calendar year's {isLuckiest ? "52-week low" : "52-week high"}. 
+              Current {config.label}: {config.current.toLocaleString("en-IN")} (Apr 2, 2026). 
+              {showTRI ? ` TRI: ~${(config.div * 100).toFixed(1)}% avg dividend yield compounded.` : " No dividends (price return only)."}
+            </p>
+          </div>
+          
+          <button 
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            style={{
+              padding: "10px",
+              background: "var(--bg-card)",
+              border: "2px solid var(--border-subtle)",
+              borderRadius: 4,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "var(--text-primary)"
+            }}
+            title="Toggle theme"
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
         </div>
         
         {/* ═══ INDEX TABS ═══ */}
-        <div style={{ display: "flex", gap: 0, marginBottom: 12, borderBottom: "1px solid #1a1a2e" }}>
+        <div style={{ display: "flex", gap: 0, marginBottom: 12, borderBottom: "1px solid var(--border-subtle)" }}>
           {TAB_CONFIG.map((t, i) => (
             <button key={t.key} onClick={() => setActiveTab(i)} style={{
               padding: "8px 14px",
@@ -194,7 +223,7 @@ export default function WorstTimingInvestor() {
               fontFamily: "inherit",
               fontWeight: activeTab === i ? 700 : 400,
               color: activeTab === i ? t.color : "#555",
-              background: activeTab === i ? `${t.color}10` : "transparent",
+              background: activeTab === i ? `${t.color}15` : "var(--bg-toggled-off)",
               border: "none",
               borderBottom: activeTab === i ? `2px solid ${t.color}` : "2px solid transparent",
               cursor: "pointer",
@@ -213,8 +242,8 @@ export default function WorstTimingInvestor() {
                 padding: "5px 12px",
                 fontSize: 10,
                 fontFamily: "inherit",
-                border: showTRI === tri ? "1px solid #4ecdc4" : "1px solid #222",
-                background: showTRI === tri ? "#4ecdc410" : "transparent",
+                border: showTRI === tri ? "1px solid #4ecdc4" : "1px solid var(--border-strong)",
+                background: showTRI === tri ? "rgba(78, 205, 196, 0.1)" : "var(--bg-toggled-off)",
                 color: showTRI === tri ? "#4ecdc4" : "#555",
                 borderRadius: 3,
                 cursor: "pointer",
@@ -230,8 +259,8 @@ export default function WorstTimingInvestor() {
                 padding: "5px 12px",
                 fontSize: 10,
                 fontFamily: "inherit",
-                border: isLuckiest === lucky ? "1px solid #facc15" : "1px solid #222",
-                background: isLuckiest === lucky ? "#facc1510" : "transparent",
+                border: isLuckiest === lucky ? "1px solid #facc15" : "1px solid var(--border-strong)",
+                background: isLuckiest === lucky ? "rgba(250, 204, 21, 0.1)" : "var(--bg-toggled-off)",
                 color: isLuckiest === lucky ? "#facc15" : "#555",
                 borderRadius: 3,
                 cursor: "pointer",
@@ -245,7 +274,7 @@ export default function WorstTimingInvestor() {
         
         {/* ═══ MAIN TABLE ═══ */}
         <div style={{ 
-          border: "1px solid #1a1a2e",
+          border: "1px solid var(--border-subtle)",
           borderRadius: 4,
           overflow: "auto",
           maxHeight: "70vh",
@@ -273,17 +302,17 @@ export default function WorstTimingInvestor() {
                   : `rgba(239, 68, 68, 0.06)`;
                 
                 return (
-                  <tr key={r.year} style={{ background: idx % 2 === 0 ? "#0d0d14" : "#0a0a0f" }}>
+                  <tr key={r.year} style={{ background: idx % 2 === 0 ? "var(--bg-table-even)" : "var(--bg-table-odd)" }}>
                     <td style={{ ...cellStyle, textAlign: "center", fontWeight: 700, color: config.color, fontSize: 11 }}>
                       {r.year}
                     </td>
-                    <td style={{ ...cellStyle, textAlign: "right", color: "#888" }}>
+                    <td style={{ ...cellStyle, textAlign: "right", color: "var(--text-muted)" }}>
                       {r.buyPrice.toLocaleString("en-IN")}
                     </td>
-                    <td style={{ ...cellStyle, textAlign: "left", color: "#777", fontSize: 10, whiteSpace: "normal", maxWidth: 220 }}>
+                    <td style={{ ...cellStyle, textAlign: "left", color: "var(--text-muted)", fontSize: 10, whiteSpace: "normal", maxWidth: 220 }}>
                       {r.context}
                     </td>
-                    <td style={{ ...cellStyle, textAlign: "right", color: "#aaa" }}>
+                    <td style={{ ...cellStyle, textAlign: "right", color: "var(--text-dim)" }}>
                       ₹1,00,000
                     </td>
                     <td style={{ 
@@ -302,15 +331,15 @@ export default function WorstTimingInvestor() {
             </tbody>
             {/* ═══ TOTAL ROW ═══ */}
             <tfoot>
-              <tr style={{ background: "#111118", borderTop: "2px solid #2a2a3e" }}>
+              <tr style={{ background: "var(--bg-table-footer)", borderTop: "2px solid var(--border-strong)" }}>
                 <td style={{ ...cellStyle, fontWeight: 800, color: "#ff6b35", textAlign: "center" }}>
                   TOTAL
                 </td>
                 <td style={{ ...cellStyle }}></td>
-                <td style={{ ...cellStyle, fontSize: 10, color: "#888", fontWeight: 600 }}>
+                <td style={{ ...cellStyle, fontSize: 10, color: "var(--text-muted)", fontWeight: 600 }}>
                   {years} years of {isLuckiest ? "best-case" : "worst-case"} entries
                 </td>
-                <td style={{ ...cellStyle, textAlign: "right", fontWeight: 700, color: "#e8e6e3" }}>
+                <td style={{ ...cellStyle, textAlign: "right", fontWeight: 700, color: "var(--text-primary)" }}>
                   {fmtLakh(result.totalInvested)}
                 </td>
                 <td style={{ 
@@ -342,13 +371,13 @@ export default function WorstTimingInvestor() {
             { label: showTRI ? "CAGR (TRI)" : "CAGR (Price)", val: `${(showTRI ? result.cagrTRI : result.cagrPrice).toFixed(1)}%`, c: "#facc15" },
           ].map((card, i) => (
             <div key={i} style={{
-              background: "#0d0d14",
-              border: "1px solid #1a1a2e",
+              background: "var(--bg-card)",
+              border: "1px solid var(--border-subtle)",
               borderRadius: 4,
               padding: "10px 8px",
               textAlign: "center",
             }}>
-              <div style={{ fontSize: 9, color: "#555", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 3 }}>
+              <div style={{ fontSize: 9, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 3 }}>
                 {card.label}
               </div>
               <div style={{ fontSize: 15, fontWeight: 700, color: card.c }}>
@@ -360,24 +389,24 @@ export default function WorstTimingInvestor() {
 
         {/* ═══ CROSS-INDEX COMPARISON ═══ */}
         <div style={{
-          border: "1px solid #1a1a2e",
+          border: "1px solid var(--border-subtle)",
           borderRadius: 4,
           padding: "14px",
           marginBottom: 16,
-          background: "#0d0d14",
+          background: "var(--bg-card)",
         }}>
-          <div style={{ fontSize: 11, color: "#888", fontWeight: 700, marginBottom: 10 }}>
+          <div style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 700, marginBottom: 10 }}>
             All Indices — Side by Side
           </div>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10 }}>
             <thead>
               <tr style={{ borderBottom: "1px solid #2a2a3e" }}>
-                <th style={{ textAlign: "left", padding: "6px", color: "#555" }}>Index</th>
-                <th style={{ textAlign: "right", padding: "6px", color: "#555" }}>Invested</th>
-                <th style={{ textAlign: "right", padding: "6px", color: "#555" }}>Price Value</th>
-                <th style={{ textAlign: "right", padding: "6px", color: "#555" }}>TRI Value</th>
-                <th style={{ textAlign: "right", padding: "6px", color: "#555" }}>TRI Multiple</th>
-                <th style={{ textAlign: "right", padding: "6px", color: "#555" }}>CAGR (TRI)</th>
+                <th style={{ textAlign: "left", padding: "6px", color: "var(--text-muted)" }}>Index</th>
+                <th style={{ textAlign: "right", padding: "6px", color: "var(--text-muted)" }}>Invested</th>
+                <th style={{ textAlign: "right", padding: "6px", color: "var(--text-muted)" }}>Price Value</th>
+                <th style={{ textAlign: "right", padding: "6px", color: "var(--text-muted)" }}>TRI Value</th>
+                <th style={{ textAlign: "right", padding: "6px", color: "var(--text-muted)" }}>TRI Multiple</th>
+                <th style={{ textAlign: "right", padding: "6px", color: "var(--text-muted)" }}>CAGR (TRI)</th>
               </tr>
             </thead>
             <tbody>
@@ -386,12 +415,12 @@ export default function WorstTimingInvestor() {
                 const m = (r.totalCurrentTRI / r.totalInvested).toFixed(1);
                 return (
                   <tr key={t.key} style={{ 
-                    borderBottom: "1px solid #111",
+                    borderBottom: "1px solid var(--border-subtle)",
                     background: i === activeTab ? `${t.color}08` : "transparent",
                   }}>
                     <td style={{ padding: "7px 6px", color: t.color, fontWeight: 600 }}>{t.label}</td>
-                    <td style={{ textAlign: "right", padding: "7px 6px", color: "#888" }}>{fmtLakh(r.totalInvested)}</td>
-                    <td style={{ textAlign: "right", padding: "7px 6px", color: "#aaa" }}>{fmtLakh(r.totalCurrentPrice)}</td>
+                    <td style={{ textAlign: "right", padding: "7px 6px", color: "var(--text-muted)" }}>{fmtLakh(r.totalInvested)}</td>
+                    <td style={{ textAlign: "right", padding: "7px 6px", color: "var(--text-dim)" }}>{fmtLakh(r.totalCurrentPrice)}</td>
                     <td style={{ textAlign: "right", padding: "7px 6px", color: "#4ecdc4", fontWeight: 600 }}>{fmtLakh(r.totalCurrentTRI)}</td>
                     <td style={{ textAlign: "right", padding: "7px 6px", color: "#ff6b35", fontWeight: 700 }}>{m}x</td>
                     <td style={{ textAlign: "right", padding: "7px 6px", color: "#facc15", fontWeight: 700 }}>{r.cagrTRI.toFixed(1)}%</td>
@@ -406,25 +435,25 @@ export default function WorstTimingInvestor() {
         <div style={{
           borderLeft: "3px solid #ff6b35",
           padding: "14px 16px",
-          background: "#0f1520",
+          background: "var(--bg-insight)",
           marginBottom: 16,
           borderRadius: "0 4px 4px 0",
         }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: "#ff6b35", marginBottom: 6 }}>
             What this proves
           </div>
-                    <p style={{ fontSize: 10, color: "#999", lineHeight: 1.7, margin: 0 }}>
+                    <p style={{ fontSize: 10, color: "var(--text-muted)", lineHeight: 1.7, margin: 0 }}>
             {isLuckiest ? 
-              <>Even the <strong style={{ color: "#e8e6e3" }}>world's luckiest investor</strong> — someone who perfectly bought exactly at every market crash bottom — would have turned ₹{years}L into {fmtLakh(totalVal)} on the {config.label}. The key insight: buying the bottom adds incredible wealth over decades, but <strong style={{ color: "#4ecdc4" }}>even terrible timing makes exceptional money</strong> as proven by the worst-timing toggle.</>
+              <>Even the <strong style={{ color: "var(--text-primary)" }}>world's luckiest investor</strong> — someone who perfectly bought exactly at every market crash bottom — would have turned ₹{years}L into {fmtLakh(totalVal)} on the {config.label}. The key insight: buying the bottom adds incredible wealth over decades, but <strong style={{ color: "#4ecdc4" }}>even terrible timing makes exceptional money</strong> as proven by the worst-timing toggle.</>
               :
-              <>Even the <strong style={{ color: "#e8e6e3" }}>world's unluckiest investor</strong> — someone who ONLY invested at the absolute peak every single year — would have turned ₹{years}L into {fmtLakh(totalVal)} on the {config.label}. The 2008 investment at the GFC peak? Still solidly profitable. The key insight: <strong style={{ color: "#4ecdc4" }}>time in the market always beats timing the market</strong>. Even getting the timing perfectly wrong for {years} consecutive years cannot beat the power of compounding and staying invested.</>
+              <>Even the <strong style={{ color: "var(--text-primary)" }}>world's unluckiest investor</strong> — someone who ONLY invested at the absolute peak every single year — would have turned ₹{years}L into {fmtLakh(totalVal)} on the {config.label}. The 2008 investment at the GFC peak? Still solidly profitable. The key insight: <strong style={{ color: "#4ecdc4" }}>time in the market always beats timing the market</strong>. Even getting the timing perfectly wrong for {years} consecutive years cannot beat the power of compounding and staying invested.</>
             }
           </p>
         </div>
         
         {/* ═══ METHODOLOGY ═══ */}
-        <div style={{ fontSize: 9, color: "#444", lineHeight: 1.6, borderTop: "1px solid #1a1a2e", paddingTop: 12 }}>
-          <strong style={{ color: "#555" }}>Methodology & Notes:</strong> 52-week highs from NSE India / niftyindices.com and BSE historical data. 
+        <div style={{ fontSize: 9, color: "var(--text-muted)", lineHeight: 1.6, borderTop: "1px solid var(--border-subtle)", paddingTop: 12 }}>
+          <strong style={{ color: "var(--text-muted)" }}>Methodology & Notes:</strong> 52-week highs from NSE India / niftyindices.com and BSE historical data. 
           Nifty Next 50 data available from ~2000, Midcap 150 & Smallcap 250 from ~2005 (indices restructured in 2017-18). 
           TRI approximated using historical avg dividend yields (Sensex: 1.45%, N50: 1.5%, NN50: 1.59%, Mid: 0.85%, Sml: 0.8%) compounded annually — 
           actual TRI would differ based on exact dividend dates. Current values as of April 2, 2026. 
